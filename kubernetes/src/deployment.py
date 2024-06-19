@@ -1,5 +1,3 @@
-from typing import Optional
-from datetime import datetime, timedelta
 from redis import Redis
 from src.pod import PodTemplateSpec, V1Pod
 from src.common import ObjectMeta
@@ -8,6 +6,8 @@ from src.utils.json import json_default
 import json
 import random
 import os
+
+from src.utils.logger import Logger
 
 DOCKER_TAG = os.environ.get("DOCKER_TAG", "")
 DEPLOYMENT_RANDOM_ID = os.environ.get("DEPLOYMENT_RANDOM_ID", "2137")
@@ -63,7 +63,7 @@ class Deployment:
         # Create pods if missing
         while (target_pods > len(self.pod_ids)):
             pod = await self.create_pod()
-            print(f"Creating missing pods {pod.id}", flush=True)
+            Logger.info("Creating missing pods %s", pod.id)
 
         # Delete pods if too many
         # BUG: This will only delete a pod if there is an idle pod. Otherwise
@@ -92,10 +92,9 @@ class Deployment:
                 else:
                     starting[key] = value
             except Exception as e:
-                print(
-                    f"Error updating key: {key} with value: {value} in {starting}",
-                    e,
-                    flush=True)
+                Logger.warning(
+                    "Error updating key: %s with value: %s in %s\nError: %s",
+                    key, value, starting, e)
                 continue
 
     async def save(self):

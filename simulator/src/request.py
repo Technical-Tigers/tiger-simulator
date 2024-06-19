@@ -13,6 +13,7 @@ class Request:
         model: str,  # model identifier
         expected_machine_type: str,
         sla_time_seconds: int,
+        continuous_batching_support: bool = False,
         input_tokens: int = -1,
         output_tokens: int = -1,
     ):
@@ -21,6 +22,7 @@ class Request:
         self.model: str = model
         self.expected_machine_type: str = expected_machine_type
         self.sla_time_seconds = sla_time_seconds
+        self.continuous_batching_support: bool = continuous_batching_support
         self.input_tokens: int = input_tokens
         self.output_tokens: int = output_tokens
         self.start_time: datetime = None
@@ -30,12 +32,11 @@ class Request:
         async with RedisConnection() as r:
             await r.set(f"req_{self.id}", json.dumps(self.__dict__,
                                                      default=str))
-            await r.set(
-                f"model_{self.model}",
-                json.dumps({
-                    "sla_time_seconds": self.sla_time_seconds,
-                    "continuous_batching_support": False
-                }))
+            # await r.set(f"model_{self.model}", (self.sla_time_seconds, self.continuous_batching_support))
+            await r.set(f"model_{self.model}", json.dumps({
+                "sla_time_seconds": self.sla_time_seconds,
+                "continuous_batching_support": self.continuous_batching_support
+            }))
 
     async def update_from_redis(self):
         async with RedisConnection() as r:

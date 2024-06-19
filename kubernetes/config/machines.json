@@ -8,7 +8,7 @@
       "name": "a8f-worker-c5.18xlarge-3.9-2137-deployment"
     },
     "spec": {
-      "replicas": 20,
+      "replicas": 30,
       "template": {
         "token_GPU": 1000,
         "token_IO": 10,    

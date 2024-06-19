@@ -12,6 +12,7 @@ from typing import List, Tuple
 from .request import Request
 from .request_pool import RequestPool
 from .utils.loading import get_models_list
+from .utils.logger import Logger
 
 RESULTS_DIR = "../results"  # TODO: move somewhere else
 MACHINE_USAGE_DIR = "machine_usage"
@@ -24,7 +25,7 @@ def create_directory(directory: str):
 
 def save_plot(filename):
     filepath = os.path.join(RESULTS_DIR, filename)
-    print(f'Saving {filepath} plot', flush=True)
+    Logger.info('Saving %s plot', filepath)
     plt.savefig(filepath)
     plt.clf()
 
@@ -148,8 +149,8 @@ def plot_cdf(requests: RequestPool):
 
 
 def plot_stats(machine: str, stats: List[Tuple[str, str]]):
-    print(f"-------Summary of machine {machine}-------")
-    print(stats)
+    Logger.info("-------Summary of machine %s-------", machine)
+    Logger.info(stats)
     if stats == []:
         return
 
@@ -258,7 +259,7 @@ def plot_stats(machine: str, stats: List[Tuple[str, str]]):
     ax.xaxis.set_major_formatter(mdates.AutoDateFormatter(loc))
 
     max_time = max(d[1] for d in loading_data + load_data + infer_data)
-    print(f"min time: {start_time}, max time: {max_time}", flush=True)
+    Logger.info("min time: %s, max time: %s", start_time, max_time)
     xticks = np.arange(0, max_time, max_time / 10)
     ax.set_xticks(xticks)
 

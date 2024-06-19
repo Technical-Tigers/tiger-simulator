@@ -1,7 +1,6 @@
 from typing import List, Set
 from time import sleep
 from datetime import datetime
-import logging
 import aiohttp
 import json
 import asyncio
@@ -13,13 +12,11 @@ from .request import Request
 from .generator import generate_synthetic_workload, generate_azure_functions_workload
 from .stats import generate_stats
 from .scheduler_proxy import schedule
+from .utils.logger import Logger
 
 import numpy as np
 
-SEED = 422
-
-log = logging.getLogger(__name__)
-
+SEED = 70
 
 class Simulator:
 
@@ -31,7 +28,7 @@ class Simulator:
     async def start(self):
         await self.__generate_requests()
 
-        print('Starting simulation', flush=True)
+        Logger.info('Starting simulation')
         tasks: Set[asyncio.Task[None]] = set()
         while not self.requests.empty():
             await asyncio.sleep(0.1)
@@ -54,7 +51,9 @@ class Simulator:
         self.request_pool: RequestPool = RequestPool()
         # await generate_synthetic_workload(self.requests, self.request_pool, 50)
         await generate_azure_functions_workload(self.requests,
-                                                self.request_pool, 30)
+                                                self.request_pool,
+                                                "LLM",
+                                                30)
 
     def __get_incoming_requests(self) -> List[Request]:
         request_list: List[Request] = []

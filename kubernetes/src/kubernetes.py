@@ -10,7 +10,7 @@ from src.utils.estimation import estimate_inference, estimate_loading
 from src.deployment import Deployment
 from src.utils.redis import RedisConnection
 from src.pod import V1Pod, PodList
-import logging
+from src.utils.logger import Logger
 
 SCHEDULER_IP = '127.0.0.1:7270'
 
@@ -36,26 +36,28 @@ async def load_model(machine_ip: str,
         replace_list = replace.split(',') if replace else []
 
         replace_list_types = [m.split('+')[-1] for m in replace_list]
-        print(
-            f"[{machine_ip}] Loading model {model}"
-            f" (replacing {replace_list_types})",
-            flush=True)
-        print(
-            f"[{machine_ip}] Models already loaded: {[m.split('+')[-1] for m in machine.models]}"
-        )
+        Logger.info(
+            "[%s] Loading model %s (replacing %s)",
+            machine_ip, model, replace_list_types)
+        Logger.info(
+            "[%s] Models already loaded: %s",
+            machine_ip, [m.split('+')[-1] for m in machine.models])
 
-        load_time = estimate_loading(model_type, machine)
+        load_time = estimate_loading(model_type, machine, len(replace_list_types) > 0)
         await machine.loadModel(model_type, load_time, replace_list)
 
         loaded_models = [m.split('+')[-1] for m in machine.models]
-        print(
-            f"[{machine_ip}] Model loaded: {model} in {load_time} seconds.\n"
-            f"[{machine_ip}] All loaded models: {loaded_models}.",
-            flush=True)
+        Logger.info(
+            "[%s] Model loaded: %s in %s seconds.\n",
+            machine_ip, model, load_time)
+        Logger.info(
+            "[%s] All loaded models: %s.",
+            machine_ip, loaded_models
+        )
 
         return True
     except Exception as e:
-        logging.error(f"[{machine_ip}] Failed to load model: {e}")
+        Logger.error("[%s] Failed to load model: %s", machine_ip, e)
         return False
 
 
@@ -65,11 +67,12 @@ async def handle_inference(pod_id: int, id: int):
     async with RedisConnection() as r:
         req = json.loads((await r.get(f"req_{id}")).decode('utf-8'))
 
-    print(f"Starting inference on pod {pod_id}, request: {req}", flush=True)
+    Logger.info("Starting inference on pod %s, request: %s", pod_id, req)
 
     # model is in the form organization_id+deployment_id+machine_type+model_type
     model_type = req["model"].split("+")[-1]
-    inference_time = estimate_inference(id, pod, model_type)
+    tokens = req["output_tokens"]
+    inference_time = estimate_inference(id, pod, model_type, tokens)
     await pod.inference(model_type, inference_time)
 
     async with aiohttp.ClientSession() as s:

@@ -1,16 +1,20 @@
 from asyncio import sleep
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
+import uuid
 from redis import Redis
 from src.common import ObjectMeta, ListMeta, K8S_POD_STATUS
 from src.utils.redis import RedisConnection
 from src.utils.json import json_default, attribute_exists
 from src.utils.utils import datetime_to_str
 import json
+from string import Template
 
 API_VERSION: str = 'v1'
 RESOURCE_VERSION: str = 'v1'
 
+BATCH_NAME = Template('pod_${id}_batch')
+STATS_NAME = Template('pod_${id}_stats')
 
 class PodTemplateSpec:
 
@@ -22,7 +26,6 @@ class PodTemplateSpec:
         self.token_IO: int = json['token_IO']
         self.deployment_id: int = json['deployment_id']
         self.models: list[str] = json.get('models', [])
-        self.stats: list[tuple[str, str]] = json.get('stats', [])
 
         self.metadata: ObjectMeta = ObjectMeta(
             json_default(json, 'metadata', {}))
@@ -37,8 +40,6 @@ class V1Pod:
         self.token_IO: int = pod_template.token_IO
         self.deployment_id: int = pod_template.deployment_id
         self.models: list[str] = pod_template.models
-        # TODO: move this somewhere else once downscaling is enabled
-        self.stats: list[tuple[str, str]] = pod_template.stats
 
         self.apiVersion: str = API_VERSION
         self.kind: str = "Pod"
@@ -51,7 +52,10 @@ class V1Pod:
         async with RedisConnection() as r:
             pod_json: dict[str, any] = json.loads(
                 (await r.get(f'pod_{id}')).decode('utf-8'))
-            return V1Pod(id, PodTemplateSpec(pod_json))
+
+            pod = V1Pod(id, PodTemplateSpec(pod_json))
+
+            return pod
 
     async def save(self):
         async with RedisConnection() as r:
@@ -69,32 +73,46 @@ class V1Pod:
     #         pod_ids.remove(self.id)
     #         await r.set("pod_ids", json.dumps(pod_ids))
 
-    async def loadModel(self, model: str, load_time: float, replace: List[str]):
+    async def add_stats(self, new_stats: list[tuple[str, str]]):
+        for i in range(len(new_stats)):
+            new_stats[i] = json.dumps(new_stats[i])
+        async with RedisConnection() as r:
+            await r.rpush(STATS_NAME.substitute(id=self.id), *new_stats) 
+
+    async def loadModel(self, model: str, load_time: float,
+                        replace: List[str]):
+        new_stats = []
         if replace is not None:
             for model_to_replace in replace:
                 model_to_replace = model_to_replace.split('+')[-1]
                 if model_to_replace in self.models:
                     self.models.remove(model_to_replace)
-                    self.stats.append((f'{model_to_replace}#unload',
+                    new_stats.append((f'{model_to_replace}#unload',
                                        datetime_to_str(datetime.now())))
 
-        self.stats.append(
+        new_stats.append(
             (f'{model}#load_start', datetime_to_str(datetime.now())))
         await sleep(load_time)
-        self.stats.append(
+        new_stats.append(
             (f'{model}#load_end', datetime_to_str(datetime.now())))
 
         self.models.append(model)
         await self.save()
+        await self.add_stats(new_stats)
 
     async def inference(self, model: str, inference_time: float):
-        self.stats.append(
+        print(f"Starting inference for {model} on pod {self.id} at {datetime.now()}", flush=True)
+        new_stats = []
+        new_stats.append(
             (f'{model}#inference_start', datetime_to_str(datetime.now())))
-        await sleep(inference_time)
-        self.stats.append(
+
+        await sleep(inference_time) 
+
+        print(f"Finishing inference for {model} on pod {self.id} at {datetime.now()}", flush=True)
+        new_stats.append(
             (f'{model}#inference_end', datetime_to_str(datetime.now())))
 
-        await self.save()
+        await self.add_stats(new_stats)
 
     def start(self):
         pass
@@ -104,6 +122,44 @@ class V1Pod:
 
     def toJson(self):
         return json.dumps(self, default=vars)
+
+    def recalculate_function(self, batch: dict[str, str], inference_id: uuid,
+                             inference_time: float):
+        # TODO: add actual function for 
+        batch[str(inference_id)] = str(datetime.now() +
+                                       timedelta(seconds=inference_time))
+        return batch
+
+    async def _recalculate_batch(self, inference_id: uuid,
+                                 infernece_time: float):
+        batch_name = BATCH_NAME.substitute(id=self.id)
+        lock_name = f"lock:{batch_name}"
+        async with RedisConnection() as r:
+            # Try to acquire the lock
+            async with r.lock(lock_name):
+
+                # Once the lock is acquired, perform the operations
+                batch = await r.hgetall(batch_name)
+                recalculated_batch = self.recalculate_function(batch, inference_id, infernece_time)
+                await r.hset(batch_name, mapping=recalculated_batch)
+
+    async def _check_inference(self, inference_id: uuid) -> float:
+        batch_name = BATCH_NAME.substitute(id=self.id)
+        lock_name = f"lock:{batch_name}"
+        redis_id = str(inference_id).encode('utf-8')
+        
+        async with RedisConnection() as r:
+            async with r.lock(lock_name):
+                batch = await r.hgetall(batch_name)
+                if redis_id not in batch:
+                    return 0
+                time_left = (datetime.fromisoformat(
+                    batch[redis_id].decode('utf-8')) -
+                                datetime.now()).total_seconds()
+                if time_left <= 0:
+                    await r.hdel(batch_name, str(inference_id))
+                    return 0.0
+                return time_left
 
 
 class V1PodSpec:

@@ -8,6 +8,7 @@ from .request import Request
 from .request_queue import RequestQueue
 from .request_pool import RequestPool
 from .plotting import plot_workload_distribution, plot_arrival_times
+from .utils.logger import Logger
 
 MACHINE_TYPES = ["c5.18xlarge"]
 BENCHMARKS_DIR = "../../benchmarks"
@@ -124,11 +125,11 @@ def get_function_trace(df, function_id):
 # Returns dictionary from model name to df with one-minute bins.
 def assign_traces_to_models(data, benchmark_models, model_to_assignments):
     assignments = {}
-    print("model to function_ids:")
+    Logger.info("model to function_ids:")
     for model in benchmark_models:
         num_traces = model_to_assignments(model)
         function_ids = np.random.randint(0, len(data), size=num_traces)
-        print(f'{model}: {function_ids}')
+        Logger.info('%s: %s', model, function_ids)
         traces = list(map(partial(get_function_trace, data), function_ids))
         assignments[model] = [sum(invocations) for invocations in zip(*traces)]
     return assignments
@@ -142,13 +143,14 @@ def poisson_process_generator(time_span_ms, events):
     # TODO
     pass
 
-
 async def add_azure_functions_requests(simulation_start_time: datetime,
                                        model: str, trace,
                                        arrival_time_generator,
                                        request_queue: RequestQueue,
-                                       request_pool: RequestPool):
-    print(f'trace len: {len(trace)}')
+                                       request_pool: RequestPool,
+                                       input_tokens_gen,
+                                       output_tokens_gen):
+    Logger.info('trace len: %d', len(trace))
     add_deadline(model, "c5.18xlarge")
     for minute, bin in enumerate(trace):
         deltas_ms = arrival_time_generator(
@@ -160,34 +162,86 @@ async def add_azure_functions_requests(simulation_start_time: datetime,
                         + timedelta(minutes=minute) \
                         + delta
             request = Request(timestamp, model, "c5.18xlarge",
-                              model_to_deadline[model])
+                              model_to_deadline[model],
+                              float(model.split('-')[0].split('+')[-1]) >= 1,
+                              input_tokens=input_tokens_gen(model),
+                              output_tokens=output_tokens_gen(model))
             await add_request(request, request_queue, request_pool)
 
+token_data = {}
+def get_input_tokens(model: str):
+    scale, name, type = model.split('-')
+    return token_data[type] \
+                     [np.random.randint(0, \
+                                        len(token_data[type]))] \
+                     ["ContextTokens"]
+
+def get_output_tokens(model: str):
+    scale, name, type = model.split('-')
+    return token_data[type] \
+                     [np.random.randint(0, \
+                                        len(token_data[type]))] \
+                     ["GeneratedTokens"]
 
 async def generate_azure_functions_workload(request_queue: RequestQueue,
                                             request_pool: RequestPool,
+                                            workload: str,
                                             trace_length_mins: int = 60):
     DAY = '07'  # from ['01', ..., '14']
     filename = f'invocations_per_function_md.anon.d{DAY}.csv'
     data_path = os.path.join(DATA_DIR, "functions", filename)
-    print(f'Loading Azure Functions workload from {data_path}.')
+    Logger.info('Loading Azure Functions workload from %s.', data_path)
     azure_data = get_azure_functions_data(data_path, trace_length_mins)
 
-    benchmarks_path = os.path.join(BENCHMARKS_DIR, "dnn_latency.csv")
-    print(f'Loading benchmarks from {benchmarks_path}')
-    benchmarks_data = pd.read_csv(benchmarks_path)
+    input_tokens_gen = lambda x: -1
+    output_tokens_gen = lambda x: -1
 
-    # filter instances that are in MACHINE_TYPES
-    benchmarks_data = benchmarks_data[benchmarks_data['Instance'].isin(
-        MACHINE_TYPES)]
+    if workload == "DNN":
+        benchmarks_path = os.path.join(BENCHMARKS_DIR, "dnn_latency.csv")
+        Logger.info('Loading benchmarks from %s', benchmarks_path)
+        benchmarks_data = pd.read_csv(benchmarks_path)
 
-    benchmarks_data['Full_name'] = "1+1+1+" + benchmarks_data[
-        'Instance'] + "+" + benchmarks_data['Model']
+        # filter instances that are in MACHINE_TYPES
+        benchmarks_data = benchmarks_data[benchmarks_data['Instance'].isin(
+            MACHINE_TYPES)]
 
-    models = list(set(benchmarks_data['Full_name']))
-    models.sort()
+        benchmarks_data['Full_name'] = "1+1+1+" + benchmarks_data[
+            'Instance'] + "+" + benchmarks_data['Model']
 
-    model_to_trace = assign_traces_to_models(azure_data, models, lambda x: 40)
+        models = list(set(benchmarks_data['Full_name']))
+        models.sort()
+
+    elif workload == "LLM":
+        llm_models = [
+            "0.5-llama_7B-conv",
+            "0.5-llama_7B-code",
+            "1-llama_7B-conv",
+            "1-llama_7B-code",
+            "1.5-llama_7B-conv",
+            "1.5-llama_7B-code"
+        ]
+        models = []
+        for model in llm_models:
+            models.append("1+1+1" + "+c5.18xlarge+" + model)
+        for model in models:
+            if model.endswith("conv"):
+                model_to_deadline[model] = 10
+            else:
+                model_to_deadline[model] = 5
+        llm_code_path = os.path.join(DATA_DIR, "llm",
+                                    "AzureLLMInferenceTrace_code.csv")
+        token_data["code"] = parse_azure_llm_trace(llm_code_path)
+
+        llm_conv_path = os.path.join(DATA_DIR, "llm",
+                                    "AzureLLMInferenceTrace_conv.csv")
+        token_data["conv"] = parse_azure_llm_trace(llm_conv_path)
+
+        input_tokens_gen = get_input_tokens
+        output_tokens_gen = get_output_tokens
+    else:
+        assert(False)
+
+    model_to_trace = assign_traces_to_models(azure_data, models, lambda x: 92)
     plot_workload_distribution(model_to_trace)
 
     simulation_start_time = datetime.now()
@@ -195,8 +249,10 @@ async def generate_azure_functions_workload(request_queue: RequestQueue,
         await add_azure_functions_requests(simulation_start_time, model,
                                            model_to_trace[model],
                                            random_process_generator,
-                                           request_queue, request_pool)
+                                           request_queue, request_pool,
+                                           input_tokens_gen,
+                                           output_tokens_gen)
 
     arrival_times = [r.arrival_time for r in request_pool.get_requests()]
     plot_arrival_times(simulation_start_time, arrival_times)
-    print("Finished generating requests")
+    Logger.info("Finished generating requests")

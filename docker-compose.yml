@@ -18,6 +18,7 @@ services:
       - ./requests:/requests
     environment:
       - SCHEDULER_NAME=${SCHEDULER_NAME}
+      - LOG=${LOG:-info}
     network_mode: host
 
   # port: 2138
@@ -27,6 +28,8 @@ services:
       - ./kubernetes:/app
       - ./wait-for-it:/app/wait-for-it
       - ./benchmarks:/benchmarks
+    environment:
+      - LOG=${LOG:-info}
     network_mode: host
   
   # port: 7270
