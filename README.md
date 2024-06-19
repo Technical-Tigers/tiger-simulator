@@ -3,7 +3,7 @@
 This simulator has been built as part of a Bachelors thesis by Piotr Blinowski,
 Szymon Mrozicki, Szymon Potrzebowski, Karol Wąsowski, under the supervision of
 Janina Daszkiewicz-Mincel Ph.D. If you want to read the thesis, click
-[here](https://github.com/technical-tigers/tiger-simulator).
+[here](https://github.com/technical-tigers/tiger-thesis).
 
 ## Running the simulator
 
