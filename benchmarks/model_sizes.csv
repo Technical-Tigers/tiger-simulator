@@ -1,0 +1,10 @@
+Model,Size
+MobileNet-V1,16.9
+SqueezeNet,0.5
+VGG-19,549
+DenseNet-169,55
+Whisper,1500
+Resnet18,135
+VGG16,528
+VGG-16,528
+Inception-ResNet-v2,215

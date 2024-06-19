@@ -1,0 +1,37 @@
+[
+  {
+    "token_GPU": 1000,
+    "token_IO": 10,
+
+    "kind": "Deployment",
+    "metadata": {
+      "name": "a8f-worker-c5.18xlarge-3.9-2137-deployment"
+    },
+    "spec": {
+      "replicas": 20,
+      "template": {
+        "token_GPU": 1000,
+        "token_IO": 10,    
+        "metadata": {
+          "name": "a8f-worker-deployment1-pod-template",
+          "labels": {
+            "instance_type":"c5.18xlarge"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "name": "a8f-worker-deployment1-container",
+              "resources": {
+                "limits": {
+                  "nvidia.com/gpu": 1
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "status": {}
+  }
+]

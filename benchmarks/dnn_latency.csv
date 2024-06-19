@@ -1,0 +1,183 @@
+Model,Instance,GPU,Latency (ms)
+Stable diffusion v2,g5.xlarge,NVIDIA A10G,1170.0
+Stable diffusion v2,g5.4xlarge,NVIDIA A10G,1180.0
+Stable diffusion v2,g5.16xlarge,NVIDIA A10G,1190.0
+Stable diffusion v2,g5.8xlarge,NVIDIA A10G,1190.0
+Stable diffusion v2,g5.2xlarge,NVIDIA A10G,1190.0
+Stable diffusion v2,g4dn.xlarge,NVIDIA T4 GPU,2290.0
+Stable diffusion v2,g3s.xlarge,NVIDIA Tesla M60 GPU,3360.0
+Stable diffusion v2,p2.xlarge,NVIDIA K80 GPUs,4540.0
+Stable diffusion v2,g5.12xlarge,NVIDIA A10G,39270.0
+Stable diffusion v2,g5.24xlarge,NVIDIA A10G,40210.0
+Stable diffusion v2,g5.48xlarge,NVIDIA A10G,46070.0
+MobileNet-V1,g4ad.2xlarge,NVIDIA T4 GPUs,3.0
+MobileNet-V1,p3.2xlarge,NVIDIA V100 GPUs,9.83
+MobileNet-V1,c5.9xlarge,Intel Xeon,11.2
+MobileNet-V1,c5.12xlarge,Intel Xeon,11.44
+MobileNet-V1,c5.24xlarge,Intel Xeon,11.51
+MobileNet-V1,c5.18xlarge,Intel Xeon,11.7
+MobileNet-V1,c5a.12xlarge,AMD EPYC,13.92
+MobileNet-V1,c5a.16xlarge,AMD EPYC,14.01
+MobileNet-V1,c5a.24xlarge,AMD EPYC,14.04
+MobileNet-V1,c5.4xlarge,Intel Xeon,16.08
+MobileNet-V1,VM.Standard.A1.Flex,Ampere Altra,17.62
+MobileNet-V1,c6g.16xlarge,Amazon Graviton2,17.89
+MobileNet-V1,c6g.12xlarge,Amazon Graviton2,18.1
+MobileNet-V1,c5a.8xlarge,AMD EPYC,19.41
+MobileNet-V1,c6g.8xlarge,Amazon Graviton2,21.21
+MobileNet-V1,c5.2xlarge,Intel Xeon,24.35
+MobileNet-V1,c5a.4xlarge,AMD EPYC,26.15
+MobileNet-V1,c6g.4xlarge,Amazon Graviton2,29.57
+MobileNet-V1,c5a.2xlarge,AMD EPYC,39.19
+SqueezeNet,g4ad.2xlarge,NVIDIA T4 GPUs,2.07
+SqueezeNet,p3.2xlarge,NVIDIA V100 GPUs,7.2
+SqueezeNet,c5.12xlarge,Intel Xeon,8.74
+SqueezeNet,c5.24xlarge,Intel Xeon,8.81
+SqueezeNet,c5.18xlarge,Intel Xeon,9.31
+SqueezeNet,c5.9xlarge,Intel Xeon,9.44
+SqueezeNet,c6g.12xlarge,Amazon Graviton2,12.04
+SqueezeNet,c5.4xlarge,Intel Xeon,12.21
+SqueezeNet,VM.Standard.A1.Flex,Ampere Altra,12.53
+SqueezeNet,c5a.8xlarge,AMD EPYC,12.67
+SqueezeNet,c5a.16xlarge,AMD EPYC,12.92
+SqueezeNet,c6g.16xlarge,Amazon Graviton2,13.05
+SqueezeNet,c5a.24xlarge,AMD EPYC,13.34
+SqueezeNet,c5a.12xlarge,AMD EPYC,13.42
+SqueezeNet,c6g.8xlarge,Amazon Graviton2,16.94
+SqueezeNet,c5.2xlarge,Intel Xeon,18.24
+SqueezeNet,c5a.4xlarge,AMD EPYC,21.72
+SqueezeNet,c6g.4xlarge,Amazon Graviton2,24.43
+SqueezeNet,c5.xlarge,Intel Xeon,32.04
+VGG-19,g4ad.2xlarge,NVIDIA T4 GPUs,1.21
+VGG-19,p3.2xlarge,NVIDIA V100 GPUs,11.23
+VGG-19,c5a.16xlarge,AMD EPYC,48.26
+VGG-19,c5a.12xlarge,AMD EPYC,48.47
+VGG-19,c5a.24xlarge,AMD EPYC,48.53
+VGG-19,c5a.8xlarge,AMD EPYC,56.85
+VGG-19,c5.24xlarge,Intel Xeon,57.8
+VGG-19,c5.12xlarge,Intel Xeon,58.66
+VGG-19,c5.18xlarge,Intel Xeon,59.27
+VGG-19,c5.9xlarge,Intel Xeon,60.05
+VGG-19,c5.4xlarge,Intel Xeon,68.63
+VGG-19,c5a.4xlarge,AMD EPYC,71.86
+VGG-19,c5.2xlarge,Intel Xeon,85.49
+VGG-19,c5a.2xlarge,AMD EPYC,102.71
+VGG-19,VM.Standard.A1.Flex,Ampere Altra,105.47
+VGG-19,c6g.16xlarge,Amazon Graviton2,111.1
+VGG-19,c5.xlarge,Intel Xeon,117.9
+VGG-19,c6g.12xlarge,Amazon Graviton2,124.31
+VGG-19,c6g.8xlarge,Amazon Graviton2,131.43
+DenseNet-169,g4ad.2xlarge,NVIDIA T4 GPUs,14.46
+DenseNet-169,p3.2xlarge,NVIDIA V100 GPUs,50.36
+DenseNet-169,c5.12xlarge,Intel Xeon,70.92
+DenseNet-169,c5.24xlarge,Intel Xeon,73.8
+DenseNet-169,c5.18xlarge,Intel Xeon,74.58
+DenseNet-169,c5.9xlarge,Intel Xeon,75.18
+DenseNet-169,c6g.12xlarge,Amazon Graviton2,99.19
+DenseNet-169,c5.4xlarge,Intel Xeon,102.16
+DenseNet-169,VM.Standard.A1.Flex,Ampere Altra,103.82
+DenseNet-169,c5a.12xlarge,AMD EPYC,109.57
+DenseNet-169,c5a.16xlarge,AMD EPYC,112.2
+DenseNet-169,c5a.24xlarge,AMD EPYC,112.2
+DenseNet-169,c6g.16xlarge,Amazon Graviton2,113.1
+DenseNet-169,c5a.8xlarge,AMD EPYC,119.22
+DenseNet-169,c6g.8xlarge,Amazon Graviton2,129.3
+DenseNet-169,c5.2xlarge,Intel Xeon,150.28
+DenseNet-169,c5a.4xlarge,AMD EPYC,169.08
+DenseNet-169,c6g.4xlarge,Amazon Graviton2,181.18
+DenseNet-169,c5.xlarge,Intel Xeon,268.89
+Whisper,g5.xlarge,NVIDIA A10G,307.19
+Whisper,g5.4xlarge,NVIDIA A10G,314.61
+Whisper,g5.8xlarge,NVIDIA A10G,317.25
+Whisper,g5.16xlarge,NVIDIA A10G,317.8
+Whisper,g5.2xlarge,NVIDIA A10G,318.2
+Whisper,c5.12xlarge,Intel Xeon,398.56
+Whisper,c5.24xlarge,Intel Xeon,437.92
+Whisper,g4dn.xlarge,NVIDIA T4 GPU,444.94
+Whisper,c5n.18xlarge,Intel Xeon,453.57
+Whisper,c5n.9xlarge,Intel Xeon,481.17
+Whisper,c5.9xlarge,Intel Xeon,491.6
+Whisper,c5.18xlarge,Intel Xeon,506.74
+Whisper,c5n.4xlarge,Intel Xeon,747.11
+Whisper,p2.xlarge,NVIDIA K80 GPUs,771.03
+Whisper,c5.4xlarge,Intel Xeon,771.04
+Whisper,g3s.xlarge,NVIDIA Tesla M60 GPU,823.87
+Whisper,gcp.e2_16cores,Intel Skylake CPU,948.38
+Whisper,c4.8xlarge,Intel Xeon,953.2
+Whisper,t2.2xlarge,AMD EPYC,980.9
+Resnet18,g3s.xlarge,NVIDIA Tesla M60 GPU,6.3
+Resnet18,gcp.C2_8cores,Intel Cascade Lake CPU,14.73
+Resnet18,c5.9xlarge,Intel Xeon,17.57
+Resnet18,c6g.8xlarge,Amazon Graviton2,18.4
+Resnet18,c6g.4xlarge,Amazon Graviton2,18.59
+Resnet18,c5.12xlarge,Intel Xeon,21.02
+Resnet18,c5.4xlarge,Intel Xeon,21.39
+Resnet18,c5.18xlarge,Intel Xeon,21.96
+Resnet18,c5a.8xlarge,AMD EPYC,23.82
+Resnet18,gcp.e2_8cores,Intel Skylake CPU,24.38
+Resnet18,c6g.12xlarge,Amazon Graviton2,25.12
+Resnet18,c6g.2xlarge,Amazon Graviton2,25.39
+Resnet18,c5a.4xlarge,AMD EPYC,26.02
+Resnet18,gcp.C2,Intel Cascade Lake CPU,27.46
+Resnet18,c5.2xlarge,Intel Xeon,29.22
+Resnet18,Azure.StandardDS2v2,Intel Xeon,31.96
+Resnet18,c5a.2xlarge,AMD EPYC,32.48
+Resnet18,c6g.16xlarge,Amazon Graviton2,35.14
+Resnet18,Azure.StandardDS11v2,Intel Xeon,35.87
+VGG16,c6g.8xlarge,Amazon Graviton2,7.72
+VGG16,c6g.12xlarge,Amazon Graviton2,8.98
+VGG16,c6g.4xlarge,Amazon Graviton2,9.64
+VGG16,g3s.xlarge,NVIDIA Tesla M60 GPU,9.94
+VGG16,c6g.16xlarge,Amazon Graviton2,12.36
+VGG16,gcp.C2_8cores,Intel Cascade Lake CPU,15.22
+VGG16,c6g.2xlarge,Amazon Graviton2,15.75
+VGG16,gcp.e2_8cores,Intel Skylake CPU,20.18
+VGG16,c6g.xlarge,Amazon Graviton2,28.52
+VGG16,gcp.C2,Intel Cascade Lake CPU,29.0
+VGG16,Azure.StandardDS11v2,Intel Xeon,32.58
+VGG16,Azure.StandardDS2v2,Intel Xeon,35.98
+VGG16,c5.12xlarge,Intel Xeon,36.08
+VGG16,c5.18xlarge,Intel Xeon,38.8
+VGG16,gcp.e2_4cores,Intel Skylake CPU,38.87
+VGG16,c5.9xlarge,Intel Xeon,39.48
+VGG16,Azure.StandardE2asv5,Intel Xeon Platinum Ice Lake,46.04
+VGG16,Azure.StandardD2asv5,Intel Xeon Platinum Ice Lake,46.24
+VGG16,Azure.StandardE2adsv5,Intel Xeon Platinum Ice Lake,46.38
+VGG-16,g4ad.2xlarge,NVIDIA T4 GPUs,1.04
+VGG-16,p3.2xlarge,NVIDIA V100 GPUs,9.27
+VGG-16,c5a.16xlarge,AMD EPYC,44.51
+VGG-16,c5a.24xlarge,AMD EPYC,44.66
+VGG-16,c5a.12xlarge,AMD EPYC,44.86
+VGG-16,c5a.8xlarge,AMD EPYC,52.58
+VGG-16,c5.24xlarge,Intel Xeon,55.29
+VGG-16,c5.12xlarge,Intel Xeon,56.29
+VGG-16,c5.18xlarge,Intel Xeon,56.72
+VGG-16,c5.9xlarge,Intel Xeon,57.47
+VGG-16,c5a.4xlarge,AMD EPYC,64.51
+VGG-16,c5.4xlarge,Intel Xeon,64.67
+VGG-16,c5.2xlarge,Intel Xeon,79.16
+VGG-16,c5a.2xlarge,AMD EPYC,91.01
+VGG-16,VM.Standard.A1.Flex,Ampere Altra,93.36
+VGG-16,c6g.16xlarge,Amazon Graviton2,96.2
+VGG-16,c5.xlarge,Intel Xeon,106.66
+VGG-16,c6g.12xlarge,Amazon Graviton2,121.11
+VGG-16,c6g.8xlarge,Amazon Graviton2,126.65
+Inception-ResNet-v2,g4ad.2xlarge,NVIDIA T4 GPUs,9.06
+Inception-ResNet-v2,p3.2xlarge,NVIDIA V100 GPUs,30.97
+Inception-ResNet-v2,c5.9xlarge,Intel Xeon,37.92
+Inception-ResNet-v2,c5.12xlarge,Intel Xeon,45.0
+Inception-ResNet-v2,c5.18xlarge,Intel Xeon,45.25
+Inception-ResNet-v2,c5.4xlarge,Intel Xeon,47.0
+Inception-ResNet-v2,c5.24xlarge,Intel Xeon,47.85
+Inception-ResNet-v2,c6g.16xlarge,Amazon Graviton2,56.34
+Inception-ResNet-v2,c6g.8xlarge,Amazon Graviton2,63.13
+Inception-ResNet-v2,c5.2xlarge,Intel Xeon,63.54
+Inception-ResNet-v2,VM.Standard.A1.Flex,Ampere Altra,63.64
+Inception-ResNet-v2,c6g.12xlarge,Amazon Graviton2,63.79
+Inception-ResNet-v2,c5a.16xlarge,AMD EPYC,70.67
+Inception-ResNet-v2,c5a.12xlarge,AMD EPYC,70.67
+Inception-ResNet-v2,c5a.8xlarge,AMD EPYC,71.52
+Inception-ResNet-v2,c6g.4xlarge,Amazon Graviton2,78.8
+Inception-ResNet-v2,c5a.24xlarge,AMD EPYC,79.0
+Inception-ResNet-v2,c5a.4xlarge,AMD EPYC,80.41
+Inception-ResNet-v2,c5.xlarge,Intel Xeon,94.07

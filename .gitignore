@@ -1,0 +1,7 @@
+__pycache__/
+results/
+logs/
+out/
+venv/
+simulator/results/
+data/

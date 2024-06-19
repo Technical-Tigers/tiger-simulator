@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7
+    network_mode: host
+  
+  # port: 2137
+  simulator:
+    build: simulator/
+    volumes:
+      - ./simulator:/app
+      - ./wait-for-it:/app/wait-for-it
+      - ./data:/data
+      - ./benchmarks:/benchmarks
+      - ./results:/results
+      - ./logs:/logs
+      - ./requests:/requests
+    environment:
+      - SCHEDULER_NAME=${SCHEDULER_NAME}
+    network_mode: host
+
+  # port: 2138
+  fake-kubernetes:
+    build: kubernetes/
+    volumes:
+      - ./kubernetes:/app
+      - ./wait-for-it:/app/wait-for-it
+      - ./benchmarks:/benchmarks
+    network_mode: host
+  
+  # port: 7270
+  scheduler:
+    build: scheduler/
+    volumes:
+      - ./scheduler/repo/a8f_control_plane:/app
+      - ./wait-for-it:/app/wait-for-it
+    network_mode: host
+    env_file:
+      - scheduler/development.env
